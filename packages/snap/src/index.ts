@@ -1,6 +1,7 @@
 import type {
   OnHomePageHandler,
   OnUserInputHandler,
+  SnapsEthereumProvider,
 } from '@metamask/snaps-sdk';
 import { UserInputEventType } from '@metamask/snaps-sdk';
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -24,6 +25,12 @@ import {
 } from '@nucypher/taco';
 
 export const onHomePage: OnHomePageHandler = async () => {
+  // await initialize(
+  //   new URL(
+  //     'https://github.com/Feka7/taco-snap/blob/main/wasm/nucypher_core_wasm_bg.wasm',
+  //   ),
+  // );
+  await initialize();
   const interfaceId = await createMenuInterface();
   return { id: interfaceId };
 };
@@ -64,27 +71,25 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     const result = successorInputValue?.concat(messageInputValue ?? '');
 
     // This resolves to the value of window.ethereum or null.
-    const provider = await detectEthereumProvider();
-   
+    const provider: SnapsEthereumProvider = ethereum;
 
-    if (provider && provider.isMetaMask) {
-      console.log('MetaMask Flask successfully detected!');
-      // Now you can use Snaps!
-      await showStoreResult(id, "meta");
-    } else {
-      console.error('Please install MetaMask Flask!');
-      await showStoreResult(id, "flask");
-    }
-    const rpcCondition = new conditions.base.rpc.RpcCondition({
-      chain: 80002,
-      method: 'eth_getBalance',
-      parameters: [':userAddress'],
-      returnValueTest: {
-        comparator: '<',
-        value: 1,
-      },
-    });
+    console.log('MetaMask Flask successfully detected!');
+    // Now you can use Snaps!
+    await showStoreResult(id, 'meta');
+  } else {
+    console.error('Please install MetaMask Flask!');
+    await showStoreResult(id, 'flask');
   }
+  const rpcCondition = new conditions.base.rpc.RpcCondition({
+    chain: 80002,
+    method: 'eth_getBalance',
+    parameters: [':userAddress'],
+    returnValueTest: {
+      comparator: '<',
+      value: 1,
+    },
+  });
+
   /** Handle restore */
   if (
     event.type === UserInputEventType.FormSubmitEvent &&
