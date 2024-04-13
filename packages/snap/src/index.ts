@@ -85,7 +85,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     const web3Provider = new ethers.providers.Web3Provider(ethereum);
 
     if (!web3Provider) {
-      await showStoreResult(id, result ?? '');
+      await showStoreResult(id, 'error');
     }
     const rpcCondition = new conditions.base.rpc.RpcCondition({
       chain: 80002,
@@ -123,6 +123,39 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     event.name === 're-store'
   ) {
     const inputValue = event.value['restore-key'];
-    await showVefiryResult(id, inputValue ?? '');
+    console.log(
+      '🚀 ~ constonUserInput:OnUserInputHandler= ~ inputValue:',
+      inputValue,
+    );
+    const web3Provider = new ethers.providers.Web3Provider(ethereum);
+    console.log(
+      '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
+      web3Provider,
+    );
+
+    if (!web3Provider) {
+      console.log(
+        '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
+        web3Provider,
+      );
+      await showStoreResult(id, 'error');
+    }
+    const decodedCiphertext = Buffer.from(inputValue ?? '', 'base64');
+
+    const mk = ThresholdMessageKit.fromBytes(decodedCiphertext);
+
+    const decryptedMessage = await decrypt(
+      web3Provider,
+      'tapir',
+      mk,
+      getPorterUri('tapir'),
+      web3Provider.getSigner(),
+    );
+    console.log(
+      '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
+      decryptedMessage,
+    );
+    const decodedMessage = new TextDecoder().decode(decryptedMessage);
+    await showVefiryResult(id, decodedMessage);
   }
 };
