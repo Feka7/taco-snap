@@ -1,15 +1,26 @@
-import type { OnHomePageHandler, OnUserInputHandler } from "@metamask/snaps-sdk";
-import { UserInputEventType } from "@metamask/snaps-sdk";
-import { createMenuInterface, createStoreInterface, createVerifyInterface } from "./ui";
+import type {
+  OnHomePageHandler,
+  OnUserInputHandler,
+} from '@metamask/snaps-sdk';
+import { UserInputEventType } from '@metamask/snaps-sdk';
+
 import {
-  conditions,
-  decrypt,
-  domains,
-  encrypt,
-  getPorterUri,
-  initialize,
-  ThresholdMessageKit,
-} from '@nucypher/taco';
+  createMenuInterface,
+  createStoreInterface,
+  createVerifyInterface,
+  showStoreResult,
+  showVefiryResult,
+} from './ui';
+
+// import {
+//   conditions,
+//   decrypt,
+//   domains,
+//   encrypt,
+//   getPorterUri,
+//   initialize,
+//   ThresholdMessageKit,
+// } from '@nucypher/taco';
 
 export const onHomePage: OnHomePageHandler = async () => {
   const interfaceId = await createMenuInterface();
@@ -42,12 +53,22 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
         break;
     }
   }
-
-  // if (
-  //   event.type === UserInputEventType.FormSubmitEvent &&
-  //   event.name === 'example-form'
-  // ) {
-  //   const inputValue = event.value['example-input'];
-  //   await showResult(id, inputValue);
-  // }
+  /** Handle Store */
+  if (
+    event.type === UserInputEventType.FormSubmitEvent &&
+    event.name === 'store-form'
+  ) {
+    const successorInputValue = event.value['successor-address'];
+    const messageInputValue = event.value['message'];
+    const result = successorInputValue?.concat(messageInputValue ?? '');
+    await showStoreResult(id, result ?? '');
+  }
+  /** Handle restore */
+  if (
+    event.type === UserInputEventType.FormSubmitEvent &&
+    event.name === 're-store'
+  ) {
+    const inputValue = event.value['restore-key'];
+    await showVefiryResult(id, inputValue ?? '');
+  }
 };

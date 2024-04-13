@@ -1,4 +1,12 @@
-import { panel, heading, button, form, input } from '@metamask/snaps-sdk';
+import {
+  panel,
+  heading,
+  button,
+  form,
+  input,
+  text,
+  copyable,
+} from '@metamask/snaps-sdk';
 
 export async function createMenuInterface(): Promise<string> {
   return await snap.request({
@@ -19,14 +27,14 @@ export async function createStoreInterface(id: string) {
     params: {
       id,
       ui: form({
-        name: 'Store your seed',
+        name: 'store-form',
         children: [
           input({
-            name: 'Successor Address',
+            name: 'successor-address',
             placeholder: '0x5ad3dA888e9B2eB509bcE5E109112ec26d559B6b',
           }),
           input({
-            name: 'Message',
+            name: 'message',
             placeholder: 'my seed',
           }),
           button({
@@ -45,10 +53,10 @@ export async function createVerifyInterface(id: string) {
     params: {
       id,
       ui: form({
-        name: 're-store your message',
+        name: 're-store',
         children: [
           input({
-            name: 'Restore key',
+            name: 'restore-key',
             placeholder: 'my seed',
           }),
           button({
@@ -57,6 +65,34 @@ export async function createVerifyInterface(id: string) {
           }),
         ],
       }),
+    },
+  });
+}
+
+export async function showVefiryResult(id: string, value: string) {
+  await snap.request({
+    method: 'snap_updateInterface',
+    params: {
+      id,
+      ui: panel([
+        heading('Interactive UI Example Snap'),
+        text('The submitted value is:'),
+        copyable(value),
+      ]),
+    },
+  });
+}
+
+export async function showStoreResult(id: string, value: string) {
+  await snap.request({
+    method: 'snap_updateInterface',
+    params: {
+      id,
+      ui: panel([
+        heading('Stored key to share'),
+        text('This is the store key to share with your successor:'),
+        copyable(value),
+      ]),
     },
   });
 }
