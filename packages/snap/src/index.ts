@@ -1,6 +1,21 @@
-import type { OnHomePageHandler } from "@metamask/snaps-sdk";
-import { panel, text, heading, button, form, input } from "@metamask/snaps-sdk";
-import { createInterface } from "./ui";
+import type {
+  OnHomePageHandler,
+  OnUserInputHandler,
+} from '@metamask/snaps-sdk';
+import {
+  panel,
+  text,
+  heading,
+  button,
+  form,
+  input,
+  UserInputEventType,
+} from '@metamask/snaps-sdk';
+import {
+  createMenuInterface,
+  createStoreInterface,
+  createVerifyInterface,
+} from './ui';
 
 // export const onHomePage: OnHomePageHandler = async () => {
 //   const interfaceId = await snap.request({
@@ -32,8 +47,42 @@ import { createInterface } from "./ui";
 // }
 
 export const onHomePage: OnHomePageHandler = async () => {
-  const interfaceId = await createInterface();
+  const interfaceId = await createMenuInterface();
 
   return { id: interfaceId };
 };
 
+export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
+  if (event.type === UserInputEventType.ButtonClickEvent) {
+    switch (event.name) {
+      case 'store-seed':
+        await createStoreInterface(id);
+        break;
+
+      case 'verify':
+        await createVerifyInterface(id);
+        break;
+
+      // case 'go-back':
+      //   await snap.request({
+      //     method: 'snap_updateInterface',
+      //     params: {
+      //       id,
+      //       ui: await getInsightContent(),
+      //     },
+      //   });
+      //   break;
+
+      default:
+        break;
+    }
+  }
+
+  // if (
+  //   event.type === UserInputEventType.FormSubmitEvent &&
+  //   event.name === 'example-form'
+  // ) {
+  //   const inputValue = event.value['example-input'];
+  //   await showResult(id, inputValue);
+  // }
+};
