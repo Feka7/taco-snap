@@ -10080,7 +10080,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^5.7.2":
+"ethers@npm:5.7.2, ethers@npm:^5.7.2":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
   dependencies:
@@ -17007,6 +17007,7 @@ __metadata:
     eslint-plugin-n: ^15.7.0
     eslint-plugin-prettier: ^4.2.1
     eslint-plugin-promise: ^6.1.1
+    ethers: 5.7.2
     prettier: ^2.7.1
     prettier-plugin-packagejson: ^2.2.18
     sharp: ^0.32.6

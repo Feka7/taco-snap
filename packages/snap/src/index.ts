@@ -23,6 +23,7 @@ import {
   initialize,
   ThresholdMessageKit,
 } from '@nucypher/taco';
+import { ethers } from 'ethers';
 
 export const onHomePage: OnHomePageHandler = async () => {
   // await initialize(
@@ -71,24 +72,41 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     const result = successorInputValue?.concat(messageInputValue ?? '');
 
     // This resolves to the value of window.ethereum or null.
-    const provider: SnapsEthereumProvider = ethereum;
+    const maybeProvider: SnapsEthereumProvider = ethereum;
 
-    console.log('MetaMask Flask successfully detected!');
+    const web3Provider = new ethers.providers.Web3Provider(ethereum);
+    //const blockId = web3Provider.blockNumber;
+
+    if (!web3Provider) {
+      await showStoreResult(id, result ?? '');
+    }
+    const rpcCondition = new conditions.base.rpc.RpcCondition({
+      chain: 80002,
+      method: 'eth_getBalance',
+      parameters: [':userAddress'],
+      returnValueTest: {
+        comparator: '<',
+        value: 1,
+      },
+    });
+
+    const message = 'my secret message';
+
+    const messageKit = await encrypt(
+      web3Provider,
+      '80002',
+      message,
+      rpcCondition,
+      0,
+      web3Provider.getSigner(),
+    );
+    const encodedCiphertext = Buffer.from(messageKit.toBytes()).toString(
+      'base64',
+    );
+
     // Now you can use Snaps!
-    await showStoreResult(id, 'meta');
-  } else {
-    console.error('Please install MetaMask Flask!');
-    await showStoreResult(id, 'flask');
+    await showStoreResult(id, encodedCiphertext);
   }
-  const rpcCondition = new conditions.base.rpc.RpcCondition({
-    chain: 80002,
-    method: 'eth_getBalance',
-    parameters: [':userAddress'],
-    returnValueTest: {
-      comparator: '<',
-      value: 1,
-    },
-  });
 
   /** Handle restore */
   if (
