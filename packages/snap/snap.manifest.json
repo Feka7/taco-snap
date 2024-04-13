@@ -17,12 +17,14 @@
     }
   },
   "initialPermissions": {
-    "snap_dialog": {},
     "endowment:rpc": {
       "dapps": true,
       "snaps": false
     },
-    "endowment:page-home": {}
+    "snap_dialog": {},
+    "endowment:transaction-insight": {},
+    "endowment:page-home": {},
+    "snap_manageState": {}
   },
   "manifestVersion": "0.1"
 }

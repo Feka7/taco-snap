@@ -1,50 +1,15 @@
-import type {
-  OnHomePageHandler,
-  OnUserInputHandler,
-} from '@metamask/snaps-sdk';
+import type { OnHomePageHandler, OnUserInputHandler } from "@metamask/snaps-sdk";
+import { UserInputEventType } from "@metamask/snaps-sdk";
+import { createMenuInterface, createStoreInterface, createVerifyInterface } from "./ui";
 import {
-  panel,
-  text,
-  heading,
-  button,
-  form,
-  input,
-  UserInputEventType,
-} from '@metamask/snaps-sdk';
-import {
-  createMenuInterface,
-  createStoreInterface,
-  createVerifyInterface,
-} from './ui';
-
-// export const onHomePage: OnHomePageHandler = async () => {
-//   const interfaceId = await snap.request({
-//     method: "snap_createInterface",
-//     params: {
-//         ui: form({
-//             name: "form-to-fill",
-//             children: [
-//                 input({
-//                     name: "user-name",
-//                     placeholder: "Your name",
-//                 }),
-//                 button({
-//                     value: "Submit",
-//                     buttonType: "submit",
-//                 }),
-//             ],
-//         }),
-//     },
-//   });
-//   await snap.request({
-//     method: "snap_dialog",
-//     params: {
-//         type: "Alert",
-//         id: interfaceId,
-//     },
-// });
-
-// }
+  conditions,
+  decrypt,
+  domains,
+  encrypt,
+  getPorterUri,
+  initialize,
+  ThresholdMessageKit,
+} from '@nucypher/taco';
 
 export const onHomePage: OnHomePageHandler = async () => {
   const interfaceId = await createMenuInterface();
