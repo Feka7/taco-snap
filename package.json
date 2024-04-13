@@ -58,6 +58,7 @@
     }
   },
   "dependencies": {
+    "@metamask/detect-provider": "^2.0.0",
     "@nucypher/taco": "^0.2.6",
     "buffer": "^6.0.3"
   }

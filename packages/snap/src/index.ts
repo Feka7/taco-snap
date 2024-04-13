@@ -3,6 +3,7 @@ import type {
   OnUserInputHandler,
 } from '@metamask/snaps-sdk';
 import { UserInputEventType } from '@metamask/snaps-sdk';
+import detectEthereumProvider from '@metamask/detect-provider';
 
 import {
   createMenuInterface,
@@ -12,19 +13,18 @@ import {
   showVefiryResult,
 } from './ui';
 
-// import {
-//   conditions,
-//   decrypt,
-//   domains,
-//   encrypt,
-//   getPorterUri,
-//   initialize,
-//   ThresholdMessageKit,
-// } from '@nucypher/taco';
+import {
+  conditions,
+  decrypt,
+  domains,
+  encrypt,
+  getPorterUri,
+  initialize,
+  ThresholdMessageKit,
+} from '@nucypher/taco';
 
 export const onHomePage: OnHomePageHandler = async () => {
   const interfaceId = await createMenuInterface();
-
   return { id: interfaceId };
 };
 
@@ -33,6 +33,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     switch (event.name) {
       case 'store-seed':
         await createStoreInterface(id);
+
         break;
 
       case 'verify':
@@ -61,7 +62,28 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     const successorInputValue = event.value['successor-address'];
     const messageInputValue = event.value['message'];
     const result = successorInputValue?.concat(messageInputValue ?? '');
-    await showStoreResult(id, result ?? '');
+
+    // This resolves to the value of window.ethereum or null.
+    const provider = await detectEthereumProvider();
+   
+
+    if (provider && provider.isMetaMask) {
+      console.log('MetaMask Flask successfully detected!');
+      // Now you can use Snaps!
+      await showStoreResult(id, "meta");
+    } else {
+      console.error('Please install MetaMask Flask!');
+      await showStoreResult(id, "flask");
+    }
+    const rpcCondition = new conditions.base.rpc.RpcCondition({
+      chain: 80002,
+      method: 'eth_getBalance',
+      parameters: [':userAddress'],
+      returnValueTest: {
+        comparator: '<',
+        value: 1,
+      },
+    });
   }
   /** Handle restore */
   if (
