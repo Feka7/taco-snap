@@ -1,13 +1,13 @@
 {
   "version": "0.1.0",
   "description": "An example Snap written in TypeScript.",
-  "proposedName": "TypeScript Example",
+  "proposedName": "Taco Snap",
   "repository": {
     "type": "git",
     "url": "https://github.com/MetaMask/template-snap-monorepo.git"
   },
   "source": {
-    "shasum": "2ryGrKTWbgjD9VAbq3QU3Yf1AfsR2CTT2UyNViLgDbE=",
+    "shasum": "le8hrfBYCLLhSc7GUP1d1HZ0bUCs+dMEZapZnD/4Lbc=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

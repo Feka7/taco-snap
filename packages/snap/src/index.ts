@@ -21,6 +21,7 @@ import {
   createMenuInterface,
   createStoreInterface,
   createVerifyInterface,
+  showErrorResult,
   showStoreResult,
   showVefiryResult,
 } from './ui';
@@ -50,15 +51,17 @@ export const onHomePage: OnHomePageHandler = async () => {
 export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
   if (event.type === UserInputEventType.ButtonClickEvent) {
     switch (event.name) {
-      case 'store-seed':
+      case 'store-message':
         await createStoreInterface(id);
 
         break;
 
-      case 'verify':
+      case 'import-message':
         await createVerifyInterface(id);
         break;
 
+      case 'error-message':
+        await showErrorResult(id, 'ops');
       // case 'go-back':
       //   await snap.request({
       //     method: 'snap_updateInterface',
@@ -78,43 +81,46 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     event.type === UserInputEventType.FormSubmitEvent &&
     event.name === 'store-form'
   ) {
-    const successorInputValue = event.value['successor-address'];
-    const messageInputValue = event.value['message'];
-    const result = successorInputValue?.concat(messageInputValue ?? '');
+    try {
+      const successorInputValue = event.value['successor-address'];
+      const messageInputValue = event.value['message'];
+      const result = successorInputValue?.concat(messageInputValue ?? '');
 
-    const web3Provider = new ethers.providers.Web3Provider(ethereum);
+      const web3Provider = new ethers.providers.Web3Provider(ethereum);
 
-    if (!web3Provider) {
-      await showStoreResult(id, 'error');
+      if (!web3Provider) {
+        throw new Error('C03 - failed to define web3Provider');
+      }
+      const rpcCondition = new conditions.base.rpc.RpcCondition({
+        chain: 80002,
+        method: 'eth_getBalance',
+        parameters: [':userAddress'],
+        returnValueTest: {
+          comparator: '<',
+          value: 1,
+        },
+      });
+
+      const message = 'plaintext';
+      const privateKey = await getPrivateKey();
+      const wallet = new Wallet(privateKey);
+
+      const messageKit = await encrypt(
+        web3Provider,
+        'tapir',
+        message,
+        rpcCondition,
+        0,
+        wallet,
+      );
+      const encodedCiphertext = Buffer.from(messageKit.toBytes()).toString(
+        'base64',
+      );
+      await showStoreResult(id, encodedCiphertext);
+    } catch (error: any) {
+      console.error(error);
+      await showErrorResult(id, 'C02-' + error?.message);
     }
-    const rpcCondition = new conditions.base.rpc.RpcCondition({
-      chain: 80002,
-      method: 'eth_getBalance',
-      parameters: [':userAddress'],
-      returnValueTest: {
-        comparator: '<',
-        value: 1,
-      },
-    });
-
-    const message = 'my secret message';
-    const privateKey = await getPrivateKey();
-    const wallet = new Wallet(privateKey);
-
-    const messageKit = await encrypt(
-      web3Provider,
-      'tapir',
-      message,
-      rpcCondition,
-      0,
-      wallet,
-    );
-    const encodedCiphertext = Buffer.from(messageKit.toBytes()).toString(
-      'base64',
-    );
-
-    // Now you can use Snaps!
-    await showStoreResult(id, encodedCiphertext);
   }
 
   /** Handle restore */
@@ -122,42 +128,50 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     event.type === UserInputEventType.FormSubmitEvent &&
     event.name === 're-store'
   ) {
-    const inputValue = event.value['restore-key'];
-    console.log(
-      '🚀 ~ constonUserInput:OnUserInputHandler= ~ inputValue:',
-      inputValue,
-    );
-    const web3Provider = new ethers.providers.Web3Provider(ethereum);
-    console.log(
-      '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
-      web3Provider,
-    );
-
-    if (!web3Provider) {
+    try {
+      const balance = await ethereum.request({
+        method: 'eth_getBalance',
+      });
+      console.log(
+        '🚀 ~ constonUserInput:OnUserInputHandler= ~ balance:',
+        balance,
+      );
+      const inputValue = event.value['restore-key'];
+      console.log(
+        '🚀 ~ constonUserInput:OnUserInputHandler= ~ inputValue:',
+        inputValue,
+      );
+      const web3Provider = new ethers.providers.Web3Provider(ethereum);
       console.log(
         '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
         web3Provider,
       );
-      await showStoreResult(id, 'error');
+
+      if (!web3Provider) {
+        throw new Error('C03 - failed to define web3Provider');
+      }
+      const decodedCiphertext = Buffer.from(inputValue ?? '', 'base64');
+
+      const mk = ThresholdMessageKit.fromBytes(decodedCiphertext);
+      const privateKey = await getPrivateKey();
+      const wallet = new Wallet(privateKey);
+
+      const decryptedMessage = await decrypt(
+        web3Provider,
+        'tapir',
+        mk,
+        getPorterUri('tapir'),
+        wallet,
+      );
+      console.log(
+        '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
+        decryptedMessage,
+      );
+      const decodedMessage = new TextDecoder().decode(decryptedMessage);
+      await showVefiryResult(id, decodedMessage);
+    } catch (error: any) {
+      console.error(error);
+      await showErrorResult(id, 'C02-' + error?.message);
     }
-    const decodedCiphertext = Buffer.from(inputValue ?? '', 'base64');
-
-    const mk = ThresholdMessageKit.fromBytes(decodedCiphertext);
-    const privateKey = await getPrivateKey();
-    const wallet = new Wallet(privateKey);
-
-    const decryptedMessage = await decrypt(
-      web3Provider,
-      'tapir',
-      mk,
-      getPorterUri('tapir'),
-      wallet,
-    );
-    console.log(
-      '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
-      decryptedMessage,
-    );
-    const decodedMessage = new TextDecoder().decode(decryptedMessage);
-    await showVefiryResult(id, decodedMessage);
   }
 };
