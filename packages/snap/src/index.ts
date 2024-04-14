@@ -18,10 +18,12 @@ import {
 } from '@metamask/snaps-sdk';
 
 import {
+  cleanMessages,
   createMenuInterface,
   createStoreInterface,
   createVerifyInterface,
   showErrorResult,
+  showMessagesResult,
   showStoreResult,
   showVefiryResult,
 } from './ui';
@@ -60,6 +62,15 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
         await createVerifyInterface(id);
         break;
 
+      case 'show-messages':
+        await showMessagesResult(id);
+        break;
+
+      case 'clean-messages':
+        await cleanMessages(id);
+        await showMessagesResult(id); 
+        break;
+
       case 'error-message':
         await showErrorResult(id, 'ops');
       // case 'go-back':
@@ -84,7 +95,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     try {
       const successorInputValue = event.value['successor-address'];
       const messageInputValue = event.value['message'];
-      const result = successorInputValue?.concat(messageInputValue ?? '');
+      const labelInputValue = event.value['label'];
 
       const web3Provider = new ethers.providers.Web3Provider(ethereum);
 
@@ -101,14 +112,13 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
         },
       });
 
-      const message = 'plaintext';
       const privateKey = await getPrivateKey();
       const wallet = new Wallet(privateKey);
 
       const messageKit = await encrypt(
         web3Provider,
         'tapir',
-        message,
+        messageInputValue ?? '',
         rpcCondition,
         0,
         wallet,
@@ -116,6 +126,25 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
       const encodedCiphertext = Buffer.from(messageKit.toBytes()).toString(
         'base64',
       );
+
+      const persistedData = await snap.request({
+        method: 'snap_manageState',
+        params: { operation: 'get' },
+      });
+
+      await snap.request({
+        method: 'snap_manageState',
+        params: {
+          operation: 'update',
+          newState: {
+            ...persistedData,
+            [labelInputValue ?? '']: encodedCiphertext,
+          },
+        },
+      });
+
+      console.log(persistedData);
+
       await showStoreResult(id, encodedCiphertext);
     } catch (error: any) {
       console.error(error);

@@ -6,6 +6,8 @@ import {
   input,
   text,
   copyable,
+  address,
+  row,
 } from '@metamask/snaps-sdk';
 
 export async function createMenuInterface(): Promise<string> {
@@ -18,7 +20,8 @@ export async function createMenuInterface(): Promise<string> {
           'Taco snap, is your secret manager. It allow you to store a message and share the key, or to import a message with a key. You can find more informations on [Taco Docs](https://docs.threshold.network/applications/threshold-access-control).',
         ),
         button({ value: 'Store Message', name: 'store-message' }),
-        button({ value: 'Import Message', name: 'import-message' }),
+        button({ value: 'Decrypt Message', name: 'import-message' }),
+        button({ value: 'Show Messages', name: 'show-messages' }),
         //button({ value: 'Error Message', name: 'error-message' }),
       ]),
     },
@@ -135,4 +138,36 @@ export async function showErrorResult(id: string, errorMessage: string) {
       ]),
     },
   });
+}
+
+export async function showMessagesResult(id: string) {
+  const persistedData = await snap.request({
+    method: 'snap_manageState',
+    params: { operation: 'get' },
+  });
+  // Prepare the data for display
+
+  let tmp_arr: any = [];
+  Object.keys(persistedData ?? {}).map((key) => {
+    tmp_arr.push(text(key));
+    tmp_arr.push(copyable(persistedData ? persistedData[key]?.toString() : ''));
+  });
+  tmp_arr.push(button({ value: 'Clean', name: 'clean-messages' }));
+  await snap.request({
+    method: 'snap_updateInterface',
+    params: {
+      id,
+      ui: panel(tmp_arr),
+    },
+  });
+}
+
+export async function cleanMessages(id: string) {
+  await snap.request({
+    method: 'snap_manageState',
+    params: {
+      operation: 'clear',
+    },
+  });
+  
 }
