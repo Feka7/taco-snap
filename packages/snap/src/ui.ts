@@ -15,9 +15,9 @@ export async function createMenuInterface(): Promise<string> {
     method: 'snap_createInterface',
     params: {
       ui: panel([
-        heading('🌮 Welcolme in Taco snap! 🌮 '),
+        heading('🌮 Welcolme in TACo Snap! 🌮 '),
         text(
-          'Taco snap, is your secret manager. It allow you to store a message and share the key, or to import a message with a key. You can find more informations on [Taco Docs](https://docs.threshold.network/applications/threshold-access-control).',
+          'TACo Snap, is your secret manager. It allow you to store a message and share the key, or to import a message with a key. You can find more informations on [TACo Docs](https://docs.threshold.network/applications/threshold-access-control).',
         ),
         button({ value: 'Store Message', name: 'store-message' }),
         button({ value: 'Decrypt Message', name: 'import-message' }),
@@ -169,5 +169,5 @@ export async function cleanMessages(id: string) {
       operation: 'clear',
     },
   });
-  
+
 }

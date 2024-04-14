@@ -19,6 +19,7 @@ const Title = styled.p`
   font-weight: bold;
   margin: 0;
   margin-left: 1.2rem;
+  color: orange;
   ${({ theme }) => theme.mediaQueries.small} {
     display: none;
   }
@@ -47,7 +48,6 @@ export const Header = ({
     <HeaderWrapper>
       <LogoWrapper>
         <SnapLogo color={theme.colors.icon?.default} size={36} />
-        <Title>template-snap</Title>
       </LogoWrapper>
       <RightContainer>
         <Toggle

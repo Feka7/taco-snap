@@ -17,7 +17,7 @@ const CardWrapper = styled.div<{
 }>`
   display: flex;
   flex-direction: column;
-  width: ${({ fullWidth }) => (fullWidth ? '100%' : '250px')};
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : '100%')};
   background-color: ${({ theme }) => theme.colors.card?.default};
   margin-top: 2.4rem;
   margin-bottom: 2.4rem;
@@ -38,14 +38,17 @@ const CardWrapper = styled.div<{
 const Title = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.large};
   margin: 0;
+  text-align: center;
   ${({ theme }) => theme.mediaQueries.small} {
     font-size: ${({ theme }) => theme.fontSizes.text};
   }
+
 `;
 
 const Description = styled.div`
   margin-top: 2.4rem;
   margin-bottom: 2.4rem;
+  text-align: center;
 `;
 
 export const Card = ({ content, disabled = false, fullWidth }: CardProps) => {
@@ -54,7 +57,7 @@ export const Card = ({ content, disabled = false, fullWidth }: CardProps) => {
     <CardWrapper fullWidth={fullWidth} disabled={disabled}>
       {title && <Title>{title}</Title>}
       <Description>{description}</Description>
-      {button}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>{button}</div>
     </CardWrapper>
   );
 };
