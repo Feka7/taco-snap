@@ -68,7 +68,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
 
       case 'clean-messages':
         await cleanMessages(id);
-        await showMessagesResult(id); 
+        await showMessagesResult(id);
         break;
 
       case 'error-message':
