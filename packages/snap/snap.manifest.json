@@ -7,7 +7,7 @@
     "url": "https://github.com/MetaMask/template-snap-monorepo.git"
   },
   "source": {
-    "shasum": "LxLFYjvdggTI3Q+XMKEdPowMvN91DDCcUU7PLC8wH5g=",
+    "shasum": "7OuSono3AHfQFmhTTz4n4M1tBYRfxhisJIW79W5+0Oc=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -36,7 +36,9 @@
       "allowSignatureOrigin": true
     },
     "endowment:keyring": {
-      "allowedOrigins": ["https://porter-tapir.nucypher.community"]
+      "allowedOrigins": [
+        "https://porter-tapir.nucypher.community"
+      ]
     }
   },
   "manifestVersion": "0.1"

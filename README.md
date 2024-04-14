@@ -1,3 +1,15 @@
+# TACo Snap
+
+TACo snap is an application of the [TACo technology](https://docs.threshold.network/applications/threshold-access-control) inside a [Metamask Snap](https://docs.metamask.io/snaps/).
+
+# Use cases
+
+This application can be a turning point in the management of confidential data, such as seed phrases, or as a password manager, but more generally it allows us to save confidential messages and share them publicly, Thanks to taco we guarantee access to data only upon the occurrence of a particular event in this case, the match with the address enßtered by the calls.
+
+In general view of the wide range of control conditions that taco allows, it is possible to think of use cases such as inheritance passes, help rights pass on art or music, using as conditions combinations of time and ownership of NFT.
+
+# Preview
+
 # @metamask/template-snap-monorepo
 
 This repository demonstrates how to develop a snap with TypeScript. For detailed
