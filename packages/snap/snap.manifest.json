@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
   "description": "An example Snap written in TypeScript.",
-  "proposedName": "Taco Snap",
+  "proposedName": "TACo Snap",
   "repository": {
     "type": "git",
     "url": "https://github.com/MetaMask/template-snap-monorepo.git"
@@ -36,9 +36,7 @@
       "allowSignatureOrigin": true
     },
     "endowment:keyring": {
-      "allowedOrigins": [
-        "https://porter-tapir.nucypher.community"
-      ]
+      "allowedOrigins": ["https://porter-tapir.nucypher.community"]
     }
   },
   "manifestVersion": "0.1"

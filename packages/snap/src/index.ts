@@ -152,14 +152,10 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     event.type === UserInputEventType.FormSubmitEvent &&
     event.name === 're-store'
   ) {
-    try {
-      const balance = await ethereum.request({
-        method: 'eth_getBalance',
-      });
-      console.log(
-        '🚀 ~ constonUserInput:OnUserInputHandler= ~ balance:',
-        balance,
-      );
+    //try {
+      // const balance = await ethereum.request({
+      //   method: 'eth_getBalance',
+      // });
       const inputValue = event.value['restore-key'];
       console.log(
         '🚀 ~ constonUserInput:OnUserInputHandler= ~ inputValue:',
@@ -175,7 +171,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
         throw new Error('C03 - failed to define web3Provider');
       }
       const decodedCiphertext = Buffer.from(inputValue ?? '', 'base64');
-
+      console.log(inputValue)
       const mk = ThresholdMessageKit.fromBytes(decodedCiphertext);
       const privateKey = await getPrivateKey();
       const wallet = new Wallet(privateKey);
@@ -193,9 +189,9 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
       );
       const decodedMessage = new TextDecoder().decode(decryptedMessage);
       await showVefiryResult(id, decodedMessage);
-    } catch (error: any) {
-      console.error(error);
-      await showErrorResult(id, 'C02-' + error?.message);
-    }
+    //} catch (error: any) {
+      //console.error(error);
+      //await showErrorResult(id, 'C02-' + error?.message);
+    //}
   }
 };
