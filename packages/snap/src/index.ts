@@ -143,13 +143,15 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     const decodedCiphertext = Buffer.from(inputValue ?? '', 'base64');
 
     const mk = ThresholdMessageKit.fromBytes(decodedCiphertext);
+    const privateKey = await getPrivateKey();
+    const wallet = new Wallet(privateKey);
 
     const decryptedMessage = await decrypt(
       web3Provider,
       'tapir',
       mk,
       getPorterUri('tapir'),
-      web3Provider.getSigner(),
+      wallet,
     );
     console.log(
       '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
