@@ -1,20 +1,7 @@
-import type {
-  OnHomePageHandler,
-  OnRpcRequestHandler,
-  OnSignatureHandler,
-  OnUserInputHandler,
-  SnapsEthereumProvider,
-} from '@metamask/snaps-sdk';
 import {
-  MethodNotFoundError,
-  panel,
-  text,
-  heading,
-  copyable,
+  OnHomePageHandler,
+  OnUserInputHandler,
   UserInputEventType,
-  UserRejectedRequestError,
-  row,
-  SeverityLevel,
 } from '@metamask/snaps-sdk';
 
 import {
@@ -31,14 +18,11 @@ import {
 import {
   conditions,
   decrypt,
-  domains,
   encrypt,
   getPorterUri,
   initialize,
   ThresholdMessageKit,
 } from '@nucypher/taco';
-
-import type { SignMessageParams } from './types';
 
 import { getPrivateKey } from './utils';
 
@@ -55,7 +39,6 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     switch (event.name) {
       case 'store-message':
         await createStoreInterface(id);
-
         break;
 
       case 'import-message':
@@ -68,20 +51,15 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
 
       case 'clean-messages':
         await cleanMessages(id);
-        await showMessagesResult(id); 
+        await showMessagesResult(id);
         break;
 
       case 'error-message':
         await showErrorResult(id, 'ops');
-      // case 'go-back':
-      //   await snap.request({
-      //     method: 'snap_updateInterface',
-      //     params: {
-      //       id,
-      //       ui: await getInsightContent(),
-      //     },
-      //   });
-      //   break;
+
+      /** Uncomment: To test error interface */
+      // case 'error-message':
+      //   await showErrorResult(id, 'ops');
 
       default:
         break;
@@ -114,6 +92,23 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
 
       const privateKey = await getPrivateKey();
       const wallet = new Wallet(privateKey);
+
+      // const customParameters: Record<
+      //   string,
+      //   conditions.context.CustomContextParam
+      // > = {
+      //   ':userAddress': successorInputValue ?? '',
+      // };
+
+      // new conditions.context.ConditionContext(
+      //   web3Provider,
+      //   new Condition(),
+      //   customParameters,
+      //   wallet,
+      // );
+
+      // const equalityCondition =
+      //   conditions.ConditionFactory.conditionFromProps(customParameters);
 
       const messageKit = await encrypt(
         web3Provider,
