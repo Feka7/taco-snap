@@ -42,7 +42,6 @@ const Title = styled.h2`
   ${({ theme }) => theme.mediaQueries.small} {
     font-size: ${({ theme }) => theme.fontSizes.text};
   }
-
 `;
 
 const Description = styled.div`

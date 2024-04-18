@@ -1,8 +1,17 @@
-import {
+import type {
   OnHomePageHandler,
   OnUserInputHandler,
-  UserInputEventType,
 } from '@metamask/snaps-sdk';
+import { UserInputEventType } from '@metamask/snaps-sdk';
+import {
+  conditions,
+  decrypt,
+  encrypt,
+  getPorterUri,
+  initialize,
+  ThresholdMessageKit,
+} from '@nucypher/taco';
+import { ethers, Wallet } from 'ethers';
 
 import {
   cleanMessages,
@@ -14,19 +23,7 @@ import {
   showStoreResult,
   showVefiryResult,
 } from './ui';
-
-import {
-  conditions,
-  decrypt,
-  encrypt,
-  getPorterUri,
-  initialize,
-  ThresholdMessageKit,
-} from '@nucypher/taco';
-
 import { getPrivateKey } from './utils';
-
-import { ethers, Wallet } from 'ethers';
 
 export const onHomePage: OnHomePageHandler = async () => {
   await initialize();
@@ -72,8 +69,8 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
   ) {
     try {
       const successorInputValue = event.value['successor-address'];
-      const messageInputValue = event.value['message'];
-      const labelInputValue = event.value['label'];
+      const messageInputValue = event.value.message;
+      const labelInputValue = event.value.label;
 
       const web3Provider = new ethers.providers.Web3Provider(ethereum);
 
@@ -143,7 +140,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
       await showStoreResult(id, encodedCiphertext);
     } catch (error: any) {
       console.error(error);
-      await showErrorResult(id, 'C02-' + error?.message);
+      await showErrorResult(id, `C02-${error?.message}`);
     }
   }
 
@@ -191,7 +188,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
       await showVefiryResult(id, decodedMessage);
     } catch (error: any) {
       console.error(error);
-      await showErrorResult(id, 'C02-' + error?.message);
+      await showErrorResult(id, `C02-${error?.message}`);
     }
   }
 };

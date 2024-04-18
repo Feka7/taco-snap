@@ -25,6 +25,12 @@
     "start": "yarn workspaces foreach --parallel --interlaced --verbose run start",
     "test": "yarn workspace snap run test"
   },
+  "dependencies": {
+    "@metamask/detect-provider": "^2.0.0",
+    "@nucypher/taco": "^0.2.6",
+    "buffer": "^6.0.3",
+    "ethers": "5.7.2"
+  },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^3.0.0",
     "@lavamoat/preinstall-always-fail": "^2.0.0",
@@ -56,11 +62,5 @@
       "@lavamoat/preinstall-always-fail": false,
       "sharp": true
     }
-  },
-  "dependencies": {
-    "@metamask/detect-provider": "^2.0.0",
-    "@nucypher/taco": "^0.2.6",
-    "buffer": "^6.0.3",
-    "ethers": "5.7.2"
   }
 }

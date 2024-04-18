@@ -4,16 +4,10 @@ import {
   ConnectButton,
   InstallFlaskButton,
   ReconnectButton,
-  SendHelloButton,
   Card,
 } from '../components';
 import { defaultSnapOrigin } from '../config';
-import {
-  useMetaMask,
-  useInvokeSnap,
-  useMetaMaskContext,
-  useRequestSnap,
-} from '../hooks';
+import { useMetaMask, useMetaMaskContext, useRequestSnap } from '../hooks';
 import { isLocalSnap, shouldDisplayReconnectButton } from '../utils';
 
 const Container = styled.div`
@@ -42,16 +36,6 @@ const Span = styled.span`
   color: orange};
 `;
 
-const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.fontSizes.large};
-  font-weight: 500;
-  margin-top: 0;
-  margin-bottom: 0;
-  ${({ theme }) => theme.mediaQueries.small} {
-    font-size: ${({ theme }) => theme.fontSizes.text};
-  }
-`;
-
 const CardContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -61,25 +45,6 @@ const CardContainer = styled.div`
   width: 100%;
   height: 100%;
   margin-top: 1.5rem;
-`;
-
-const Notice = styled.div`
-  background-color: ${({ theme }) => theme.colors.background?.alternative};
-  border: 1px solid ${({ theme }) => theme.colors.border?.default};
-  color: ${({ theme }) => theme.colors.text?.alternative};
-  border-radius: ${({ theme }) => theme.radii.default};
-  padding: 2.4rem;
-  margin-top: 2.4rem;
-  max-width: 60rem;
-  width: 100%;
-
-  & > * {
-    margin: 0;
-  }
-  ${({ theme }) => theme.mediaQueries.small} {
-    margin-top: 1.2rem;
-    padding: 1.6rem;
-  }
 `;
 
 const ErrorMessage = styled.div`
@@ -104,15 +69,10 @@ const Index = () => {
   const { error } = useMetaMaskContext();
   const { isFlask, snapsDetected, installedSnap } = useMetaMask();
   const requestSnap = useRequestSnap();
-  const invokeSnap = useInvokeSnap();
 
   const isMetaMaskReady = isLocalSnap(defaultSnapOrigin)
     ? isFlask
     : snapsDetected;
-
-  const handleSendHelloClick = async () => {
-    await invokeSnap({ method: 'hello' });
-  };
 
   return (
     <Container>
@@ -156,8 +116,7 @@ const Index = () => {
           <Card
             content={{
               title: 'Reconnect',
-              description:
-                'Re-install the TACo-Snap 🌮',
+              description: 'Re-install the TACo-Snap 🌮',
               button: (
                 <ReconnectButton
                   onClick={requestSnap}

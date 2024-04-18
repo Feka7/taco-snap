@@ -1,18 +1,18 @@
 {
-  "version": "0.1.0",
-  "description": "An example Snap written in TypeScript.",
-  "proposedName": "TACo Snap",
+  "version": "0.1.0-beta",
+  "description": "Your seed and password manager Snap",
+  "proposedName": "taco-secret-manager",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/template-snap-monorepo.git"
+    "url": "https://github.com/Feka7/taco-snap"
   },
   "source": {
-    "shasum": "7OuSono3AHfQFmhTTz4n4M1tBYRfxhisJIW79W5+0Oc=",
+    "shasum": "NG0DIqTcAoVy/G8I4Uw1hJ61TfBOr3OT4PrCo+SVkMQ=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
         "iconPath": "images/tacoV2.svg",
-        "packageName": "snap",
+        "packageName": "taco-secret-manager",
         "registry": "https://registry.npmjs.org/"
       }
     }

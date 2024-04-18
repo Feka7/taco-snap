@@ -6,10 +6,12 @@ import {
   input,
   text,
   copyable,
-  address,
-  row,
 } from '@metamask/snaps-sdk';
 
+/**
+ * @description createMenuInterface return the first manu interface
+ * @returns Promise<string>
+ */
 export async function createMenuInterface(): Promise<string> {
   return await snap.request({
     method: 'snap_createInterface',
@@ -22,12 +24,16 @@ export async function createMenuInterface(): Promise<string> {
         button({ value: 'Store Message', name: 'store-message' }),
         button({ value: 'Decrypt Message', name: 'import-message' }),
         button({ value: 'Show Messages', name: 'show-messages' }),
-        //button({ value: 'Error Message', name: 'error-message' }),
+        // button({ value: 'Error Message', name: 'error-message' }),
       ]),
     },
   });
 }
 
+/**
+ * @description generate the UI interface to store the message
+ * @param id - the interface ID
+ */
 export async function createStoreInterface(id: string) {
   await snap.request({
     method: 'snap_updateInterface',
@@ -67,6 +73,10 @@ export async function createStoreInterface(id: string) {
   });
 }
 
+/**
+ * @description generate the UI interface to verify the message
+ * @param id - the interface ID
+ */
 export async function createVerifyInterface(id: string) {
   return await snap.request({
     method: 'snap_updateInterface',
@@ -96,6 +106,11 @@ export async function createVerifyInterface(id: string) {
   });
 }
 
+/**
+ * @description generate UI interface to show the stored message resolved
+ * @param id - the interface ID
+ * @param value - the decrypted result
+ */
 export async function showVefiryResult(id: string, value: string) {
   await snap.request({
     method: 'snap_updateInterface',
@@ -110,6 +125,11 @@ export async function showVefiryResult(id: string, value: string) {
   });
 }
 
+/**
+ * @description generate UI interface to show the stored message access key result
+ * @param id - the interface ID
+ * @param value - the encrypted result key
+ */
 export async function showStoreResult(id: string, value: string) {
   await snap.request({
     method: 'snap_updateInterface',
@@ -126,6 +146,11 @@ export async function showStoreResult(id: string, value: string) {
   });
 }
 
+/**
+ * @description generate UI interface to show an error status
+ * @param id - the interface ID
+ * @param errorMessage - the error message to display
+ */
 export async function showErrorResult(id: string, errorMessage: string) {
   await snap.request({
     method: 'snap_updateInterface',
@@ -140,6 +165,10 @@ export async function showErrorResult(id: string, errorMessage: string) {
   });
 }
 
+/**
+ *
+ * @param id
+ */
 export async function showMessagesResult(id: string) {
   const persistedData = await snap.request({
     method: 'snap_manageState',
@@ -147,7 +176,7 @@ export async function showMessagesResult(id: string) {
   });
   // Prepare the data for display
 
-  let tmp_arr: any = [];
+  const tmp_arr: any = [];
   Object.keys(persistedData ?? {}).map((key) => {
     tmp_arr.push(text(key));
     tmp_arr.push(copyable(persistedData ? persistedData[key]?.toString() : ''));
@@ -162,6 +191,10 @@ export async function showMessagesResult(id: string) {
   });
 }
 
+/**
+ *
+ * @param id
+ */
 export async function cleanMessages(id: string) {
   await snap.request({
     method: 'snap_manageState',
@@ -169,5 +202,4 @@ export async function cleanMessages(id: string) {
       operation: 'clear',
     },
   });
-
 }
