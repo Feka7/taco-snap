@@ -70,9 +70,13 @@ const Index = () => {
   const { isFlask, snapsDetected, installedSnap } = useMetaMask();
   const requestSnap = useRequestSnap();
 
-  const isMetaMaskReady = isLocalSnap(defaultSnapOrigin)
-    ? isFlask
-    : snapsDetected;
+  console.log('🚀 ~ defaultSnapOrigin:', defaultSnapOrigin);
+
+  // const isMetaMaskReady = isLocalSnap(defaultSnapOrigin)
+  //   ? isFlask
+  //   : snapsDetected;
+  //TODO: temp because of no deploy for metamask
+  const isMetaMaskReady = isFlask;
 
   return (
     <Container>

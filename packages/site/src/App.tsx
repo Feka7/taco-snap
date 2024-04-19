@@ -2,7 +2,6 @@ import type { FunctionComponent, ReactNode } from 'react';
 
 import styled from 'styled-components';
 
-import { Footer } from './components';
 import { GlobalStyle } from './config/theme';
 
 const Wrapper = styled.div`
@@ -21,10 +20,7 @@ export const App: FunctionComponent<AppProps> = ({ children }) => {
   return (
     <>
       <GlobalStyle />
-      <Wrapper>
-        {children}
-        <Footer />
-      </Wrapper>
+      <Wrapper>{children}</Wrapper>
     </>
   );
 };
