@@ -65,6 +65,11 @@ const ErrorMessage = styled.div`
   }
 `;
 
+const ListItem = styled.li`
+  text-align: left;
+  padding-bottom: 1.2rem;
+`;
+
 const Index = () => {
   const { error } = useMetaMaskContext();
   const { isFlask, snapsDetected, installedSnap } = useMetaMask();
@@ -89,6 +94,37 @@ const Index = () => {
             <b>An error happened:</b> {error.message}
           </ErrorMessage>
         )}
+        <Card
+          content={{
+            title: '🌮 TACo-Snap usage 🌮',
+            description: (
+              <p>
+                <ol>
+                  <ListItem>
+                    Install and open TACo-Snap application on MetaMask.
+                  </ListItem>
+                  <ListItem>
+                    Click on store message, fill the only one address that is
+                    allow to decrypt de message, and fill the message and add a
+                    label to access your keys from keychain.(e.g. your seed
+                    phrase){' '}
+                  </ListItem>
+                  <ListItem>
+                    Copy the key access key, and share it, or store it where you
+                    want. Don't worry your message is in safe. Note: you can get
+                    the key when you want by looking in your keychain.
+                  </ListItem>
+                  <ListItem>
+                    To decrypt a message you need a key and your wallet must to
+                    be the same wallet that who generated the key allowed to
+                    decrypt the message.
+                  </ListItem>
+                </ol>
+              </p>
+            ),
+          }}
+          disabled={!installedSnap}
+        />
         {!isMetaMaskReady && (
           <Card
             content={{
