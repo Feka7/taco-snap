@@ -17,9 +17,11 @@ export const Copyable = ({ message }: CopyableProps) => {
   };
 
   return (
-    <div>
-      <span>{message}</span>
+    <>
+      <p>
+        <b>{message}</b>
+      </p>
       <button onClick={handleCopy}>{copied ? 'Copied!' : 'Copy'}</button>
-    </div>
+    </>
   );
 };

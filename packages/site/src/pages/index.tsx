@@ -95,8 +95,7 @@ const ListItem = styled.li`
 `;
 
 const Index = () => {
-  const { error, provider } = useMetaMaskContext();
-  console.log('🚀 ~ Index ~ provider:', provider);
+  const { error } = useMetaMaskContext();
   const { isFlask, snapsDetected, installedSnap } = useMetaMask();
   const [success, setSuccess] = useState(false);
   const [decryptError, setSecryptError] = useState<Error | undefined>(
@@ -122,7 +121,9 @@ const Index = () => {
       const decodedCiphertext = Buffer.from(key ?? '', 'base64');
 
       const messageKit = ThresholdMessageKit.fromBytes(decodedCiphertext);
-      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+      const web3Provider = new ethers.providers.Web3Provider(
+        window.ethereum as any,
+      );
       await web3Provider.send('eth_requestAccounts', []);
       const decryptedMessage = await decrypt(
         web3Provider,
