@@ -17,6 +17,8 @@ const CardWrapper = styled.div<{
 }>`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: ${({ fullWidth }) => (fullWidth ? '100%' : '100%')};
   background-color: ${({ theme }) => theme.colors.card?.default};
   margin-top: 2.4rem;

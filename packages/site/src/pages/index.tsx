@@ -5,10 +5,21 @@ import {
   InstallFlaskButton,
   ReconnectButton,
   Card,
+  Copyable,
 } from '../components';
 import { defaultSnapOrigin } from '../config';
 import { useMetaMask, useMetaMaskContext, useRequestSnap } from '../hooks';
 import { isLocalSnap, shouldDisplayReconnectButton } from '../utils';
+import {
+  decrypt,
+  domains,
+  getPorterUri,
+  initialize,
+  ThresholdMessageKit,
+} from '@nucypher/taco';
+import { ethers } from 'ethers';
+import { useState } from 'react';
+import { Buffer } from 'buffer';
 
 const Container = styled.div`
   display: flex;
@@ -47,6 +58,20 @@ const CardContainer = styled.div`
   margin-top: 1.5rem;
 `;
 
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+`;
+
+const Input = styled.input`
+  border-radius: 5px;
+  height: 3rem;
+  width: 80%;
+`;
+
 const ErrorMessage = styled.div`
   background-color: ${({ theme }) => theme.colors.error?.muted};
   border: 1px solid ${({ theme }) => theme.colors.error?.default};
@@ -56,7 +81,6 @@ const ErrorMessage = styled.div`
   margin-bottom: 2.4rem;
   margin-top: 2.4rem;
   max-width: 60rem;
-  width: 100%;
   ${({ theme }) => theme.mediaQueries.small} {
     padding: 1.6rem;
     margin-bottom: 1.2rem;
@@ -71,17 +95,52 @@ const ListItem = styled.li`
 `;
 
 const Index = () => {
-  const { error } = useMetaMaskContext();
+  const { error, provider } = useMetaMaskContext();
+  console.log('🚀 ~ Index ~ provider:', provider);
   const { isFlask, snapsDetected, installedSnap } = useMetaMask();
-  const requestSnap = useRequestSnap();
+  const [success, setSuccess] = useState(false);
+  const [decryptError, setSecryptError] = useState<Error | undefined>(
+    undefined,
+  );
+  const [decryptedMessage, setDecrypetedMessage] = useState<string | undefined>(
+    undefined,
+  );
+  const [key, setKey] = useState('');
 
-  console.log('🚀 ~ defaultSnapOrigin:', defaultSnapOrigin);
+  const requestSnap = useRequestSnap();
 
   // const isMetaMaskReady = isLocalSnap(defaultSnapOrigin)
   //   ? isFlask
   //   : snapsDetected;
   //TODO: temp because of no deploy for metamask
   const isMetaMaskReady = isFlask;
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    try {
+      event.preventDefault();
+      await initialize();
+      const decodedCiphertext = Buffer.from(key ?? '', 'base64');
+
+      const messageKit = ThresholdMessageKit.fromBytes(decodedCiphertext);
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+      await web3Provider.send('eth_requestAccounts', []);
+      const decryptedMessage = await decrypt(
+        web3Provider,
+        domains.TESTNET ?? 'tapir',
+        messageKit,
+        getPorterUri(domains.TESTNET ?? 'tapir'),
+        web3Provider.getSigner(),
+      );
+      const decodedMessage = new TextDecoder().decode(decryptedMessage);
+
+      setDecrypetedMessage(decodedMessage);
+      return decodedMessage;
+    } catch (error) {
+      setSecryptError(new Error(`E-02: ${error}`));
+    } finally {
+      setSuccess(true);
+    }
+  };
 
   return (
     <Container>
@@ -123,8 +182,55 @@ const Index = () => {
               </p>
             ),
           }}
-          disabled={!installedSnap}
         />
+        {isMetaMaskReady && (
+          <Card
+            content={{
+              title: '🌮 Decrypt your secret 🌮',
+              description: (
+                <Form onSubmit={handleSubmit}>
+                  <label htmlFor="secret-key">Secret key</label>
+                  <Input
+                    id="secret-key"
+                    type="text"
+                    placeholder="eqhrqee1whsjans...."
+                    value={key}
+                    onChange={(e) => setKey(e.target.value)}
+                  />
+                  <button type="submit">Submit 🌮</button>
+                </Form>
+              ),
+            }}
+          />
+        )}
+        {success && decryptedMessage && (
+          <Card
+            content={{
+              title: '🌮 Decrypted successfully 🌮',
+              description: (
+                <p>
+                  Your secret message is: <br />
+                  <Copyable message={decryptedMessage} />
+                </p>
+              ),
+            }}
+          />
+        )}
+        {success && decryptError && (
+          <Card
+            content={{
+              title: '❌ Oops, Something went wrong! ❌',
+              description: (
+                <div>
+                  <ErrorMessage>
+                    Decryption failed: <br /> {decryptError.message}
+                  </ErrorMessage>
+                </div>
+              ),
+            }}
+          />
+        )}
+        {/* )} */}
         {!isMetaMaskReady && (
           <Card
             content={{
