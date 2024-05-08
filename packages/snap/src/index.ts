@@ -1,8 +1,20 @@
 import type {
   OnHomePageHandler,
+  OnRpcRequestHandler,
+  OnSignatureHandler,
   OnUserInputHandler,
 } from '@metamask/snaps-sdk';
-import { UserInputEventType } from '@metamask/snaps-sdk';
+import {
+  panel,
+  text,
+  UserInputEventType,
+  heading,
+  UserRejectedRequestError,
+  copyable,
+  SeverityLevel,
+  row,
+  MethodNotFoundError,
+} from '@metamask/snaps-sdk';
 import {
   conditions,
   decrypt,
@@ -24,6 +36,7 @@ import {
   showVefiryResult,
 } from './ui';
 import { getPrivateKey } from './utils';
+import { SignMessageParams } from './types';
 
 export const onHomePage: OnHomePageHandler = async () => {
   await initialize();
@@ -77,41 +90,52 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
       if (!web3Provider) {
         throw new Error('C03 - failed to define web3Provider');
       }
-      const rpcCondition = new conditions.base.rpc.RpcCondition({
+      const hasEqualAddress = new conditions.base.contract.ContractCondition({
+        method: 'areAddressesEqual',
+        parameters: [
+          '0x5ad3dA888e9B2eB509bcE5E109112ec26d559B6b', //TODO: replace with successorInputValue
+          ':userAddress',
+        ],
+        functionAbi: {
+          inputs: [
+            {
+              internalType: 'address',
+              name: 'address1',
+              type: 'address',
+            },
+            {
+              internalType: 'address',
+              name: 'address2',
+              type: 'address',
+            },
+          ],
+          name: 'areAddressesEqual',
+          outputs: [
+            {
+              internalType: 'bool',
+              name: '',
+              type: 'bool',
+            },
+          ],
+          stateMutability: 'pure',
+          type: 'function',
+        },
+        contractAddress: '0xa4387d7f664B79A60AE38676E636Ed913593cBdF',
         chain: 80002,
-        method: 'eth_getBalance',
-        parameters: [':userAddress'],
         returnValueTest: {
-          comparator: '<',
-          value: 1,
+          comparator: '==',
+          value: true,
         },
       });
 
       const privateKey = await getPrivateKey();
       const wallet = new Wallet(privateKey);
 
-      // const customParameters: Record<
-      //   string,
-      //   conditions.context.CustomContextParam
-      // > = {
-      //   ':userAddress': successorInputValue ?? '',
-      // };
-
-      // new conditions.context.ConditionContext(
-      //   web3Provider,
-      //   new Condition(),
-      //   customParameters,
-      //   wallet,
-      // );
-
-      // const equalityCondition =
-      //   conditions.ConditionFactory.conditionFromProps(customParameters);
-
       const messageKit = await encrypt(
         web3Provider,
         'tapir',
         messageInputValue ?? '',
-        rpcCondition,
+        hasEqualAddress,
         0,
         wallet,
       );
@@ -150,9 +174,6 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
     event.name === 're-store'
   ) {
     try {
-      // const balance = await ethereum.request({
-      //   method: 'eth_getBalance',
-      // });
       const inputValue = event.value['restore-key'];
       console.log(
         '🚀 ~ constonUserInput:OnUserInputHandler= ~ inputValue:',
@@ -186,9 +207,135 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
       );
       const decodedMessage = new TextDecoder().decode(decryptedMessage);
       await showVefiryResult(id, decodedMessage);
+      //await web3Provider.send('eth_requestAccounts', []);
     } catch (error: any) {
       console.error(error);
       await showErrorResult(id, `C02-${error?.message}`);
     }
+  }
+};
+
+export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
+  console.log(
+    '🚀 ~ constonRpcRequest:OnRpcRequestHandler= ~ request:',
+    request,
+  );
+  switch (request.method) {
+    case 'getAddress': {
+      const privateKey = await getPrivateKey();
+      const wallet = new Wallet(privateKey);
+
+      return await wallet.getAddress();
+    }
+
+    case 'signMessage': {
+      const params = request.params as SignMessageParams;
+      const privateKey = await getPrivateKey();
+      const wallet = new Wallet(privateKey);
+      const result = await snap.request({
+        method: 'snap_dialog',
+        params: {
+          type: 'confirmation',
+          content: panel([
+            heading('Signature request'),
+            text('Do you want to sign this message?'),
+            copyable(params.message),
+          ]),
+        },
+      });
+      if (!result) {
+        throw new UserRejectedRequestError();
+      }
+      return wallet.signMessage(params.message);
+    }
+
+    default:
+      throw new MethodNotFoundError({ method: request.method });
+  }
+};
+
+export const onSignature: OnSignatureHandler = async ({ signature }) => {
+  console.log(
+    '🚀 ~ constonSignature:OnSignatureHandler= ~ signature:',
+    signature,
+  );
+  const { signatureMethod, from, data } = signature;
+  let domain;
+  if (
+    signatureMethod === 'eth_signTypedData_v3' ||
+    signatureMethod === 'eth_signTypedData_v4'
+  ) {
+    domain = data.domain;
+  }
+
+  // const getSignedTypedDataRows = (typeData: Record<string, any>[]) => {
+  //   const typeCount = typeData.reduce(
+  //     (acc: Record<string, number>, currVal: Record<string, string>) => {
+  //       if (acc[currVal.type]) {
+  //         acc[currVal.type] += 1;
+  //       } else {
+  //         acc[currVal.type] = 1;
+  //       }
+  //       return acc;
+  //     },
+  //     {},
+  //   );
+  //   return Object.entries(typeCount).map(([type, count]) =>
+  //     row(type, text(`${count}`)),
+  //   );
+  // };
+
+  switch (signatureMethod) {
+    case 'eth_sign':
+      return {
+        content: panel([
+          heading("'About 'eth_sign'"),
+          text(
+            "eth_sign is one of the oldest signing methods that MetaMask still supports. Back in the early days of MetaMask when it was originally designed, web3 was quite different from the present day. There were fewer standards for signatures, so eth_sign was developed with a fairly simple, open-ended structure.\nThe main thing to note about eth_sign is that it allows the website you're on to request that you sign an arbitrary hash. In this mathematical context, 'arbitrary' means unspecified; your signature could be applied by the requesting dapp to pretty much anything. eth_sign is therefore unsuitable to use with sources that you don't trust.\nAdditionally, the way eth_sign is designed means that the contents of the message you're signing are not human-readable. It's impossible to check up on what you're actually signing, making it particularly dangerous.",
+          ),
+        ]),
+        severity: SeverityLevel.Critical,
+      };
+
+    case 'personal_sign':
+      return {
+        content: panel([row('From:', text(from)), row('Data:', text(data))]),
+        severity: SeverityLevel.Critical,
+      };
+
+    // case 'eth_signTypedData':
+    //   // Show a count of the different types.
+    //   return {
+    //     content: panel([
+    //       heading('Message type count'),
+    //       ...getSignedTypedDataRows(data),
+    //     ]),
+    //     severity: SeverityLevel.Critical,
+    //   };
+
+    case 'eth_signTypedData_v3':
+      return {
+        content: panel([
+          heading('Danger!'),
+          text(
+            `${domain.verifyingContract} has been identified as a malicious verifying contract.`,
+          ),
+        ]),
+        severity: SeverityLevel.Critical,
+      };
+
+    case 'eth_signTypedData_v4':
+      return {
+        content: panel([
+          heading('Danger!'),
+          text(
+            `${domain.verifyingContract} has been identified as a malicious verifying contract.`,
+          ),
+        ]),
+        severity: SeverityLevel.Critical,
+      };
+
+    default:
+      return null;
   }
 };
