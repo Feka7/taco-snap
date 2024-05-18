@@ -146,7 +146,7 @@ const Index = () => {
   return (
     <Container>
       <Heading>
-        Welcome to <Span>TACo Snap! 🌮</Span>
+        Welcome to <Span>W3SV Snap! </Span>
       </Heading>
       <CardContainer>
         {error && (
@@ -156,12 +156,12 @@ const Index = () => {
         )}
         <Card
           content={{
-            title: '🌮 TACo-Snap usage 🌮',
+            title: ' W3SV-Snap usage ',
             description: (
               <p>
                 <ol>
                   <ListItem>
-                    Install and open TACo-Snap application on MetaMask.
+                    Install and open W3SV-Snap application on MetaMask.
                   </ListItem>
                   <ListItem>
                     Click on store message, fill the only one address that is
@@ -187,7 +187,7 @@ const Index = () => {
         {isMetaMaskReady && (
           <Card
             content={{
-              title: '🌮 Decrypt your secret 🌮',
+              title: ' Decrypt your secret ',
               description: (
                 <Form onSubmit={handleSubmit}>
                   <label htmlFor="secret-key">Secret key</label>
@@ -198,7 +198,7 @@ const Index = () => {
                     value={key}
                     onChange={(e) => setKey(e.target.value)}
                   />
-                  <button type="submit">Submit 🌮</button>
+                  <button type="submit">Submit </button>
                 </Form>
               ),
             }}
@@ -207,7 +207,7 @@ const Index = () => {
         {success && decryptedMessage && (
           <Card
             content={{
-              title: '🌮 Decrypted successfully 🌮',
+              title: ' Decrypted successfully ',
               description: (
                 <p>
                   Your secret message is: <br />
@@ -248,7 +248,7 @@ const Index = () => {
             content={{
               title: 'Connect',
               description:
-                'Get started by connecting to and installing the TACo-Snap 🌮',
+                'Get started by connecting to and installing the TACo-Snap ',
               button: (
                 <ConnectButton
                   onClick={requestSnap}
@@ -263,7 +263,7 @@ const Index = () => {
           <Card
             content={{
               title: 'Reconnect',
-              description: 'Re-install the TACo-Snap 🌮',
+              description: 'Re-install the TACo-Snap ',
               button: (
                 <ReconnectButton
                   onClick={requestSnap}

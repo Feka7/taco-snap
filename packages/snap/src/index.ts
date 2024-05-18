@@ -67,10 +67,6 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
       case 'error-message':
         await showErrorResult(id, 'ops');
 
-      /** Uncomment: To test error interface */
-      // case 'error-message':
-      //   await showErrorResult(id, 'ops');
-
       default:
         break;
     }
@@ -92,10 +88,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
       }
       const hasEqualAddress = new conditions.base.contract.ContractCondition({
         method: 'areAddressesEqual',
-        parameters: [
-          '0x5ad3dA888e9B2eB509bcE5E109112ec26d559B6b', //TODO: replace with successorInputValue
-          ':userAddress',
-        ],
+        parameters: [successorInputValue, ':userAddress'],
         functionAbi: {
           inputs: [
             {
@@ -189,7 +182,7 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
         throw new Error('C03 - failed to define web3Provider');
       }
       const decodedCiphertext = Buffer.from(inputValue ?? '', 'base64');
-      console.log(inputValue);
+
       const mk = ThresholdMessageKit.fromBytes(decodedCiphertext);
       const privateKey = await getPrivateKey();
       const wallet = new Wallet(privateKey);
@@ -200,10 +193,6 @@ export const onUserInput: OnUserInputHandler = async ({ id, event }) => {
         mk,
         getPorterUri('tapir'),
         wallet,
-      );
-      console.log(
-        '🚀 ~ constonUserInput:OnUserInputHandler= ~ web3Provider:',
-        decryptedMessage,
       );
       const decodedMessage = new TextDecoder().decode(decryptedMessage);
       await showVefiryResult(id, decodedMessage);
@@ -255,10 +244,6 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ request }) => {
 };
 
 export const onSignature: OnSignatureHandler = async ({ signature }) => {
-  console.log(
-    '🚀 ~ constonSignature:OnSignatureHandler= ~ signature:',
-    signature,
-  );
   const { signatureMethod, from, data } = signature;
   let domain;
   if (

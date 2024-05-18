@@ -17,9 +17,9 @@ export async function createMenuInterface(): Promise<string> {
     method: 'snap_createInterface',
     params: {
       ui: panel([
-        heading('🌮 Welcolme in TACo Snap! 🌮 '),
+        heading(' Welcolme in W3SV Snap!  '),
         text(
-          'TACo Snap, is your secret manager. It allow you to store a message and share the key, or to import a message with a key. You can find more informations on [TACo Docs](https://docs.threshold.network/applications/threshold-access-control).',
+          'W3SV Snap, is your seed & secret manager. It allow you to store a message and share the key, or to import a message with a key. You can find more informations on [W3SV](https://w3sv.vercel.app/).',
         ),
         button({ value: 'Store Message', name: 'store-message' }),
         button({ value: 'Decrypt Message', name: 'import-message' }),
@@ -117,7 +117,7 @@ export async function showVefiryResult(id: string, value: string) {
     params: {
       id,
       ui: panel([
-        heading('🔒 Success Import! 🌮'),
+        heading('🔒 Success Import! '),
         text('This is the secret message that was stored. Enjoy!'),
         copyable(value),
       ]),
@@ -136,7 +136,7 @@ export async function showStoreResult(id: string, value: string) {
     params: {
       id,
       ui: panel([
-        heading('🔒 Success Store! 🌮'),
+        heading('🔒 Success Store! '),
         text(
           'Your massage was save correclty. This is the store key to share with your successor:',
         ),

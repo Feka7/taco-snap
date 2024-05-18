@@ -1,7 +1,7 @@
 {
   "version": "0.1.0-beta",
-  "description": "Your seed and password manager Snap",
-  "proposedName": "taco-secret-manager",
+  "description": "Your seed and secret manager as a Snap",
+  "proposedName": "w3sv",
   "repository": {
     "type": "git",
     "url": "https://github.com/Feka7/taco-snap"
@@ -12,7 +12,7 @@
       "npm": {
         "filePath": "dist/bundle.js",
         "iconPath": "images/tacoV2.svg",
-        "packageName": "taco-secret-manager",
+        "packageName": "w3sv",
         "registry": "https://registry.npmjs.org/"
       }
     }
@@ -36,9 +36,7 @@
       "allowSignatureOrigin": true
     },
     "endowment:keyring": {
-      "allowedOrigins": [
-        "https://porter-tapir.nucypher.community"
-      ]
+      "allowedOrigins": ["https://porter-tapir.nucypher.community"]
     }
   },
   "manifestVersion": "0.1"

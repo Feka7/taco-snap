@@ -1,7 +1,7 @@
 {
-  "name": "taco-secret-manager",
+  "name": "w3sv",
   "version": "0.1.0-beta",
-  "description": "Your seed and password manager Snap",
+  "description": "Your seed and secret manager as a Snap",
   "repository": {
     "type": "git",
     "url": "https://github.com/Feka7/taco-snap"
